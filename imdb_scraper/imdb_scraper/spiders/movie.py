@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
-from scrapy.spiders import CrawlSpider, Rule
+import datetime
 from scrapy.linkextractors import LinkExtractor
+from scrapy.spiders import CrawlSpider, Rule
 
-SEARCH_QUERY = (
-    'https://www.imdb.com/search/title?'
-    'title_type=feature&'
-    'user_rating=1.0,10.0&'
-    'countries=us&'
-    'languages=en&'
-    'count=250&'
-    'view=simple'
-)
+SEARCH_QUERY = ('https://www.imdb.com/search/title?'
+                'title_type=feature&'
+                'user_rating=1.0,10.0&'
+                'countries=us&'
+                'languages=en&'
+                'count=250&'
+                'view=simple')
 
 
 class MovieSpider(CrawlSpider):
@@ -22,7 +21,7 @@ class MovieSpider(CrawlSpider):
         LinkExtractor(restrict_css=('div.desc a')),
         follow=True,
         callback='parse_query_page',
-    ),)
+    ), )
 
     def parse_query_page(self, response):
         links = response.css('span.lister-item-header a::attr(href)').extract()
@@ -31,23 +30,30 @@ class MovieSpider(CrawlSpider):
 
     def parse_movie_detail_page(self, response):
         data = {}
+        data['url'] = response.url.replace('?ref_=adv_li_tt', '')
+        data['date_download'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         data['title'] = response.css('h1::text').extract_first().strip()
         data['rating'] = response.css(
             '.subtext::text').extract_first().strip() or None
         data['year'] = response.css('#titleYear a::text').extract_first()
         data['users_rating'] = response.xpath(
-            '//span[contains(@itemprop, "ratingValue")]/text()').extract_first()
+            '//span[contains(@itemprop, "ratingValue")]/text()').extract_first(
+            )
         data['votes'] = response.xpath(
-            '//span[contains(@itemprop, "ratingCount")]/text()').extract_first()
+            '//span[contains(@itemprop, "ratingCount")]/text()').extract_first(
+            )
         data['metascore'] = response.xpath(
-            '//div[contains(@class, "metacriticScore")]/span/text()').extract_first()
+            '//div[contains(@class, "metacriticScore")]/span/text()'
+        ).extract_first()
         data['img_url'] = response.xpath(
             '//div[contains(@class, "poster")]/a/img/@src').extract_first()
         countries = response.xpath(
-            '//div[contains(@class, "txt-block") and contains(.//h4, "Country")]/a/text()').extract()
+            '//div[contains(@class, "txt-block") and contains(.//h4, "Country")]/a/text()'
+        ).extract()
         data['countries'] = [country.strip() for country in countries]
         languages = response.xpath(
-            '//div[contains(@class, "txt-block") and contains(.//h4, "Language")]/a/text()').extract()
+            '//div[contains(@class, "txt-block") and contains(.//h4, "Language")]/a/text()'
+        ).extract()
         data['languages'] = [language.strip() for language in languages]
         actors = response.xpath('//td[not(@class)]/a/text()').extract()
         data['actors'] = [actor.strip() for actor in actors]
@@ -58,15 +64,18 @@ class MovieSpider(CrawlSpider):
             '//div[contains(string(), "Tagline")]/text()').extract()
         data['tagline'] = ''.join(tagline).strip() or None
         data['description'] = response.xpath(
-            '//div[contains(@class, "summary_text")]/text()').extract_first().strip() or None
+            '//div[contains(@class, "summary_text")]/text()').extract_first(
+            ).strip() or None
         data['storyline'] = response.xpath(
-            '//div[contains(@id, "titleStoryLine")]/div[contains(@class, "canwrap")]/p/span/text()').extract_first().strip() or None
+            '//div[contains(@id, "titleStoryLine")]/div[contains(@class, "canwrap")]/p/span/text()'
+        ).extract_first().strip() or None
         directors = response.xpath(
-            "//div[contains(@class, 'credit_summary_item') and contains(.//h4, 'Director')]/a/text()").extract() or None
+            "//div[contains(@class, 'credit_summary_item') and contains(.//h4, 'Director')]/a/text()"
+        ).extract() or None
         if directors:
             data['directors'] = [director.strip() for director in directors]
         data['runtime'] = response.xpath(
-            "//div[contains(@class, 'txt-block') and contains(.//h4, 'Runtime')]/time/text()").extract_first() or None
-        data['imdb_url'] = response.url.replace('?ref_=adv_li_tt', '')
+            "//div[contains(@class, 'txt-block') and contains(.//h4, 'Runtime')]/time/text()"
+        ).extract_first() or None
 
         yield data
