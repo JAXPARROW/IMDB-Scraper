@@ -33,6 +33,8 @@ six = "==1.12.0"
 twisted = "==18.9.0"
 w3lib = "==1.19.0"
 zope-interface = "==4.6.0"
+python-dotenv = "*"
+elasticsearch = "*"
 
 [requires]
 python_version = "3.6"
