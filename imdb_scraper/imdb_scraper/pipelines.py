@@ -3,8 +3,8 @@ import logging
 
 from elasticsearch import Elasticsearch
 
-from .config import (ES_HOST, ES_INDEX, ES_MAPPING, ES_PORT, ES_SECRET,
-                     ES_USERNAME)
+from .config.settings import (ES_HOST, ES_INDEX, ES_MAPPING, ES_PORT,
+                              ES_SECRET, ES_USERNAME)
 
 
 class ImdbScraperPipeline(object):
@@ -61,7 +61,7 @@ class ElasticSearchPipeline(object):
 
     def extract_data(self, key, value):
         if key == 'votes':
-            return int(value.replace(',', ''))
+            return int(value.replace(',', '')) if value else None
         elif key in ['countries', 'languages', 'genre', 'actors', 'directors']:
             return [{'name': v} for v in value]
         return value

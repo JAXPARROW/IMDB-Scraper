@@ -4,6 +4,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Sources
+SOURCES_PATH = os.path.join(os.path.dirname(__file__), 'queries.json')
+
+# Elastic Search
 ES_HOST = os.getenv('ES_HOST', '127.0.0.1')
 ES_PORT = os.getenv('ES_PORT', 9200)
 ES_INDEX = os.getenv('ES_INDEX', 'imdb')
