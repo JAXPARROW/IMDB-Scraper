@@ -16,28 +16,17 @@ This is a [Scrapy](https://github.com/scrapy/scrapy) project which can be used t
 
 ### Search query
 
-You can change the starting page of the crawler in the file `imdb_scraper/spiders/movie.py` by changing the `SEARCH_QUERY` variable. You can get your own query from here: [imdb.com/search/title](https://www.imdb.com/search/title). Copy the generated URL and paste it in place of default url. By default:
-```python3
-SEARCH_QUERY = (
-    'https://www.imdb.com/search/title?'
-    'title_type=feature&'
-    'user_rating=1.0,10.0&'
-    'countries=us&'
-    'languages=en&'
-    'count=250&'
-    'view=simple'
-)
-```
+You can set the search queries in a json config file `config/queries.json`. You can get your own query from here: [imdb.com/search/title](https://www.imdb.com/search/title).
 
 ### ElasticSearch
 
-You can store scraped info in elasticsearch, just enable the pipeline in the `ITEM_PIPELINE` dict in `settings.py` (enabled by default) and set the following env vars:
+You can store scraped info in elasticsearch, just enable the pipeline in the `ITEM_PIPELINE` dict in `config/scrapy.py` (enabled by default) and set the following env vars:
 
 ```ES_HOST, ES_PORT, ES_USERNAME, ES_SECRET, ES_INDEX```
 
 ### JSON Output
 
-If you enable the `FEED_URI` and `FEED_FORMAT` settings in `settings.py`, data will be stored in `json` file named `movie.json` located at `IMDB-Scraper/imdb-scraper/data/movie.json`.
+If you enable the `FEED_URI` and `FEED_FORMAT` settings in `config/scrapy.py`, data will be stored in `json` file named `movie.json` located at `IMDB-Scraper/imdb-scraper/data/movie.json`.
 
 ## Getting started
 
