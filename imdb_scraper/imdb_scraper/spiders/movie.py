@@ -59,6 +59,8 @@ class MovieSpider(CrawlSpider):
         data['tagline'] = ''.join(tagline).strip() or None
         data['description'] = response.xpath(
             '//div[contains(@class, "summary_text")]/text()').extract_first().strip() or None
+        data['story_line'] = response.xpath(
+            '//div[contains(@id, "titleStoryLine")]/div[contains(@class, "canwrap")]/p/text()').extract_first().strip() or None
         directors = response.xpath(
             "//div[contains(@class, 'credit_summary_item') and contains(.//h4, 'Director')]/a/text()").extract() or None
         if directors:
